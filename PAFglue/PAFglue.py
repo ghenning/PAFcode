@@ -115,9 +115,12 @@ def add_to_new(fils,counter,endMJD,outfile,logfile):
     file_end_MJD = MJD
     biglen = 0
     #print "starting counter is %s" % counter
+    nchans = 512 # make as an option, or read from header or something
     samptime = 54.e-6 # I think just setting this to zero is fine, because it grabs that info later
     # it doesn't pad on the first file, so it should be fine
     while going:
+        with open(logfile,'a') as L:
+            L.write("#Working on file %s\n" % fils[counter])
         # find mjd, compare to end MJD, if OK continue
         beam, MJD = get_info(fils[counter])
         print "counter is at %s " % counter
@@ -140,18 +143,46 @@ def add_to_new(fils,counter,endMJD,outfile,logfile):
             print "padding with 512x%s of zeros" % round(numsamp_2_add)
             with open(logfile,'a') as L:
                 timeintofile = (biglen/512) * samptime 
-                L.write("Padding %s samples, or %s seconds\n" % (numsamp_2_add, numsamp_2_add*samptime))
-                L.write("%s seconds into the file\n" % timeintofile)
+                L.write("#Padding %s samples, or %s seconds\n" % (numsamp_2_add, numsamp_2_add*samptime))
+                L.write("#%s seconds into the file\n" % timeintofile)
+                L.write("%s\t%s\t%s\n" % (numsamp_2_add,numsamp_2_add*samptime,timeintofile))
             with open(outfile,'a') as f:
                 padnum = numsamp_2_add * 512
                 current_mean = RunStat.mean
                 print "current mean: %s " % current_mean
                 current_std = RunStat.std
                 print "current std: %s " % current_std
-                gauss_noise = np.random.normal(current_mean,current_std,padnum).astype(np.uint8)
+                noisecounter = 0
+                diff = 1
+                noiseblock = 500
+                while diff != 0:
+                    adding = noiseblock * nchans
+                    noisecounter += adding
+                    gauss_noise = np.random.normal(current_mean,current_std,adding)
+                    #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+                    #print "len of gauss noise less than 0"
+                    #print len(gauss_noise[gauss_noise < 0])
+                    #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+                    gauss_noise[gauss_noise < 0] = np.random.choice([0,round(current_mean)])
+                    gauss_noise = gauss_noise.astype(np.uint8)
+                    f.write(gauss_noise)
+                    diff = padnum - noisecounter
+                    if diff < adding:
+                        noiseblock = diff/nchans
+                        print "diff in padsamps and counter"
+                        print diff
+                        print "I should only appear twice per padding!"
+                #gauss_noise = np.random.normal(current_mean,current_std,padnum).astype(np.uint8)
+                #gauss_noise = np.random.normal(current_mean,current_std,padnum)
+                #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+                #print "len of gauss noise less than 0"
+                #print len(gauss_noise[gauss_noise < 0])
+                #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+                #gauss_noise[gauss_noise < 0] = np.random.choice([0,round(current_mean)])
+                #gauss_noise = gauss_noise.astype(np.uint8)
                 #padding = np.zeros(padnum,dtype=np.uint8)
                 #f.write(padding)
-                f.write(gauss_noise)
+                #f.write(gauss_noise)
                 biglen += padnum
             print "padding done, crossing fingers it works"
             #print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -247,10 +278,37 @@ def thepad(origfil,outfile,presamps,postsamps,beam_mean,beam_std,logfile):
         with open(outfile,'a') as f: # will I need to loop over this with large paddings? or when noise is added
             current_mean = beam_mean
             current_std = beam_std
-            gauss_noise = np.random.normal(current_mean,current_std,prepadnum).astype(np.uint8)
+            noisecounter = 0
+            diff = 1
+            noiseblock = 500
+            while diff != 0:
+                adding = noiseblock * nchans
+                noisecounter += adding
+                gauss_noise = np.random.normal(current_mean,current_std,adding)
+                #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+                #print "len of gauss noise less than 0"
+                #print len(gauss_noise[gauss_noise < 0])
+                #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+                gauss_noise[gauss_noise < 0] = np.random.choice([0,round(current_mean)])
+                gauss_noise = gauss_noise.astype(np.uint8)
+                f.write(gauss_noise)
+                diff = prepadnum - noisecounter
+                if diff < adding:
+                    noiseblock = diff/nchans
+                    print "diff in padsamps and counter"
+                    print diff
+                    print "I should only appear twice per padding!"
+            #gauss_noise = np.random.normal(current_mean,current_std,prepadnum).astype(np.uint8)
+            #gauss_noise = np.random.normal(current_mean,current_std,prepadnum)
+            #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+            #print "len of gauss noise less than 0"
+            #print len(gauss_noise[gauss_noise < 0])
+            #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+            #gauss_noise[gauss_noise < 0] = np.random.choice([0,round(current_mean)])
+            #gauss_noise = gauss_noise.astype(np.uint8)
             #padding = np.zeros(prepadnum,dtype=np.uint8)
             #f.write(padding)     
-            f.write(gauss_noise)
+            #f.write(gauss_noise)
     print "pre-padding done"
     print "writing data to padded file"
     with open(origfil,'r') as X:
@@ -269,16 +327,45 @@ def thepad(origfil,outfile,presamps,postsamps,beam_mean,beam_std,logfile):
         with open(outfile,'a') as f:
             current_mean = beam_mean
             current_std = beam_std
-            gauss_noise = np.random.normal(current_mean,current_std,postpadnum).astype(np.uint8)
+            noisecounter = 0
+            diff = 1
+            noiseblock = 500
+            while diff != 0:
+                adding = noiseblock * nchans
+                noisecounter += adding
+                gauss_noise = np.random.normal(current_mean,current_std,adding)
+                #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+                #print "len of gauss noise less than 0"
+                #print len(gauss_noise[gauss_noise < 0])
+                #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+                gauss_noise[gauss_noise < 0] = np.random.choice([0,round(current_mean)])
+                gauss_noise = gauss_noise.astype(np.uint8)
+                f.write(gauss_noise)
+                diff = postpadnum - noisecounter
+                if diff < adding:
+                    noiseblock = diff/nchans
+                    print "diff in padsamps and counter"
+                    print diff
+                    print "I should only appear twice per padding!"
+            #gauss_noise = np.random.normal(current_mean,current_std,postpadnum).astype(np.uint8)
+            #gauss_noise = np.random.normal(current_mean,current_std,postpadnum)
+            #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+            #print "len of gauss noise less than 0"
+            #print len(gauss_noise[gauss_noise < 0])
+            #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
+            #gauss_noise[gauss_noise < 0] = np.random.choice([0,round(current_mean)])
+            #gauss_noise = gauss_noise.astype(np.uint8)
             #padding = np.zeros(postpadnum,dtype=np.uint8)
             #f.write(padding)
-            f.write(gauss_noise)
+            #f.write(gauss_noise)
     with open(logfile,'a') as L:
-        L.write("pre-padded %s samples\n" % int(presamps))
-        L.write("which is %s seconds\n" % (presamps*samptime))
-        L.write("post-padded %s samples\n" % int(postsamps))
-        L.write("which is %s seconds\n" % (postsamps*samptime))
-        L.write("the prepadding needs to be taken into account when looking at the other padding\n")
+        L.write("#pre-padded %s samples\n" % int(presamps))
+        L.write("#which is %s seconds\n" % (presamps*samptime))
+        L.write("%s\t%s\n" % (int(presamps),presamps*samptime))
+        L.write("#post-padded %s samples\n" % int(postsamps))
+        L.write("#which is %s seconds\n" % (postsamps*samptime))
+        L.write("%s\t%s\n" % (int(postsamps),postsamps*samptime))
+        L.write("#the prepadding needs to be taken into account when looking at the other padding\n")
     print "post-padding done"
     
 
