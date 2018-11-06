@@ -158,7 +158,7 @@ def add_to_new(fils,counter,endMJD,outfile,logfile):
                 while diff != 0:
                     adding = noiseblock * nchans
                     noisecounter += adding
-                    gauss_noise = np.random.normal(current_mean,current_std,adding)
+                    gauss_noise = np.random.normal(current_mean,current_std,int(adding))
                     #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
                     #print "len of gauss noise less than 0"
                     #print len(gauss_noise[gauss_noise < 0])
@@ -284,7 +284,7 @@ def thepad(origfil,outfile,presamps,postsamps,beam_mean,beam_std,logfile):
             while diff != 0:
                 adding = noiseblock * nchans
                 noisecounter += adding
-                gauss_noise = np.random.normal(current_mean,current_std,adding)
+                gauss_noise = np.random.normal(current_mean,current_std,int(adding))
                 #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
                 #print "len of gauss noise less than 0"
                 #print len(gauss_noise[gauss_noise < 0])
@@ -333,7 +333,7 @@ def thepad(origfil,outfile,presamps,postsamps,beam_mean,beam_std,logfile):
             while diff != 0:
                 adding = noiseblock * nchans
                 noisecounter += adding
-                gauss_noise = np.random.normal(current_mean,current_std,adding)
+                gauss_noise = np.random.normal(current_mean,current_std,int(adding))
                 #print "$%(*$&%$(^#(^%(#@*^%#)(&%^)#&%^$)&%"
                 #print "len of gauss noise less than 0"
                 #print len(gauss_noise[gauss_noise < 0])
@@ -370,14 +370,24 @@ def thepad(origfil,outfile,presamps,postsamps,beam_mean,beam_std,logfile):
     
 
 if __name__=="__main__":
-    desc = ""
+    desc = "example usage: PAFglue.py --dir /path/to/filterbanks/ --start 2018-06-14-12:30:00 \
+        --duration 30 --start-beam 0 --nbeams 16 --outdir /path/to/filterbanks/B0355+54_180614\
+        --outname B0355+54"
     parser = optparse.OptionParser(description=desc)
-    parser.add_option('--dir',dest='d',type='string')
-    parser.add_option('--start',dest='start',type='string')
-    parser.add_option('--duration',dest='dur',type='int')
-    parser.add_option('--nbeams',dest='nbeams',type='int')
-    parser.add_option('--outname',dest='outname',type='string')
-    parser.add_option('--start-beam',dest='stbeam',type='int')
+    parser.add_option('--dir',dest='d',type='string',
+        help="Directory containing filterbank files")
+    parser.add_option('--start',dest='start',type='string',
+        help="Start time of observations in format YYYY-MM-DD-HH:MM:SS")
+    parser.add_option('--duration',dest='dur',type='int',
+        help="Duration of observations in minutes")
+    parser.add_option('--nbeams',dest='nbeams',type='int',
+        help="Number of beams to grab")
+    parser.add_option('--outname',dest='outname',type='string',
+        help="Name of the output file, e.g. B0355+54")
+    parser.add_option('--start-beam',dest='stbeam',type='int',
+        help="Number of starting beam")
+    parser.add_option('--outdir',dest='outdir',type='string',
+        help="Output directory of files (creates it if it doesn't exist)")
     (opts,args) = parser.parse_args()
     #printing_n_counting(opts.d)
     Tstart = datetime.strptime(opts.start,'%Y-%m-%d-%H:%M:%S')
@@ -386,6 +396,10 @@ if __name__=="__main__":
     TendMJD = (Time(Tend,format='datetime')).mjd
     startandbeam = []
     startandbeam = np.asarray(startandbeam)
+    try:
+        os.mkdir(opts.outdir)
+    except OSError as error:
+        print error
     #for B in range(opts.nbeams):
     # make an (Nbeam,3) array with [beam No., median/mean, std] to keep running
     # statistics for padding. making the noise should then just be 
@@ -399,14 +413,14 @@ if __name__=="__main__":
             print "there are no files with this beam number in this directory"
             continue
         a = opts.outname + "_beam_" + str(B+1) + ".fil"
-        outguy = os.path.join(opts.d,a)
+        outguy = os.path.join(opts.outdir,a)
         print "number of filterbanks for this beam: %s " % len(thefiles)
         start_file, where_is_it = find_start_file(TstartMJD,TendMJD,thefiles)
         if start_file == 0:
             print "No files within requested time range"
             continue
         thelog = opts.outname + "_beam_" + str(B+1) + "_log.txt"
-        LOG = os.path.join(opts.d,thelog)
+        LOG = os.path.join(opts.outdir,thelog)
         with open(LOG,'w') as L:
             L.write("in-between files padding:\n")
         create_new_file(start_file,outguy,False,0)
@@ -449,7 +463,7 @@ if __name__=="__main__":
     for B in range(len(startandbeam[:,0])):
         beam = int(startandbeam[B,0])
         thelog = opts.outname + "_beam_" + str(beam+1) + "_log.txt"
-        LOG = os.path.join(opts.d,thelog)
+        LOG = os.path.join(opts.outdir,thelog)
         with open(LOG,'a') as L:
             L.write("pre and post padding:\n")
         print "#$#$#$$#$#$#$#$$#$#$"
@@ -457,8 +471,8 @@ if __name__=="__main__":
         print "#$#$#$$#$#$#$#$$#$#$"
         origi = opts.outname + "_beam_" + str(beam + 1) + ".fil"
         paddy = opts.outname + "_beam_" + str(beam + 1) + "_padded.fil"
-        origuy = os.path.join(opts.d,origi)
-        padguy = os.path.join(opts.d,paddy)
+        origuy = os.path.join(opts.outdir,origi)
+        padguy = os.path.join(opts.outdir,paddy)
         print "TESTING SHIT"
         print origuy
         print os.path.isfile(origuy)
