@@ -489,6 +489,8 @@ if __name__=="__main__":
         beam_std = startandbeam[B,4]
         thepad(origuy,padguy,earlydiff_samples,latediff_samples,beam_mean,beam_std,LOG)
         subprocess.check_call(["rm",origuy])
+    # change ownership from root to psr
+    subprocess.check_call(['chown','-R','50000:50000',opts.outdir])
     print startandbeam
          
  
