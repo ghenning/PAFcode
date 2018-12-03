@@ -47,13 +47,21 @@ def plot_dedisp_ts(NCHAN,FTOP,FCHAN,DM,SAMPTIME,SAMPUSE,DATA,PLOTNAME):
         ts_DD = np.add(ts_DD,chandata[dmdelay_samp:dmdelay_samp + sampuse])
     print "ts DD shape {}".format(np.shape(ts_DD))
     plt.plot(ts_DD[0,:])
+    plt.xlabel('Time [samples]')
+    plt.ylabel('Amplitude')
+    plt.title('De-dispersed time series')
     plt.savefig(PLOTNAME)
+    plt.close()
     #plt.show()
 
 def plot_dynspec_raw(DATA,PLOTNAME):
     # raw dynamic spectra
     plt.imshow(DATA,aspect='auto',interpolation='none',cmap='binary')
+    plt.xlabel('Time [samples]')
+    plt.ylabel('Frequency [channels]')
+    plt.title('Dynamic spectrum')
     plt.savefig(PLOTNAME)
+    plt.close()
     #plt.show()
 
 def plot_tscrunch(AVGFACT,SAMPUSE,NCHAN,DATA,PLOTNAME): # sampuse_noDD, which datagrab
@@ -67,7 +75,11 @@ def plot_tscrunch(AVGFACT,SAMPUSE,NCHAN,DATA,PLOTNAME): # sampuse_noDD, which da
         timmy[:, tavg] = subavg[:,0] 
     print "timmy shape {}".format(np.shape(timmy))
     plt.imshow(timmy,aspect='auto',interpolation='none',cmap='binary')
+    plt.xlabel('Time [samples]')
+    plt.ylabel('Frequency [channels]')
+    plt.title('Dynamic spectrum, time scrunched')
     plt.savefig(PLOTNAME)
+    plt.close()
     #plt.show()
 
 def plot_freqscrunch(OUTBANDS,NCHAN,SAMPUSE,DATA,FTOP,FCHAN,DM,PLOTNAME): # datagrab_noDD,sampuse_noDD
@@ -85,7 +97,11 @@ def plot_freqscrunch(OUTBANDS,NCHAN,SAMPUSE,DATA,FTOP,FCHAN,DM,PLOTNAME): # data
             downsamped[band,:] = np.add(downsamped[band,:],subdata[chan,dmdelay_samp : dmdelay_samp + sampuse_noDD])
     print "downsamped shape {}".format(np.shape(downsamped))
     plt.imshow(downsamped, aspect='auto',interpolation='none',cmap='binary')
+    plt.xlabel('Time [samples]')
+    plt.ylabel('Frequency [channels]')
+    plt.title('Dynamic spectrum, freq. scrunched')
     plt.savefig(PLOTNAME)
+    plt.close()
     #plt.show()
     return downsamped
 
@@ -101,7 +117,11 @@ def plot_tfscrunch(SAMPUSE,AVGFACT,OUTBANDS,DATA,PLOTNAME): # needs data from fr
         timmy[:,tavg] = subavg[:,0]
     print "timmy shape {}".format(np.shape(timmy))
     plt.imshow(timmy,aspect='auto',interpolation='none',cmap='binary')
+    plt.xlabel('Time [samples]')
+    plt.ylabel('Frequency [channels]')
+    plt.title('Dynamic spectrum, time and freq. scrunched')
     plt.savefig(PLOTNAME)
+    plt.close()
     #plt.show()
 
 def plot_DDF(OUTBANDS,SAMPUSE,DATA,FTOP,FCHAN,DM,NCHAN,PLOTNAME): # uses downsamped form fscrunched, sampuse, 
@@ -119,7 +139,11 @@ def plot_DDF(OUTBANDS,SAMPUSE,DATA,FTOP,FCHAN,DM,NCHAN,PLOTNAME): # uses downsam
         dedispF[chan,:] = np.add(dedispF[chan,:],chandata[dmdelay_samp : dmdelay_samp + sampuse]) 
     print "dedispF shape {}".format(np.shape(dedispF))
     plt.imshow(dedispF,aspect='auto',interpolation='none',cmap='binary')
+    plt.xlabel('Time [samples]')
+    plt.ylabel('Frequency [channels]')
+    plt.title('De-dispersed dynamic spectrum, freq. scrunched')
     plt.savefig(PLOTNAME)
+    plt.close()
     #plt.show()
     return dedispF
 
@@ -136,7 +160,11 @@ def plot_DDFT(SAMPUSE,AVGFACT,OUTBANDS,DATA,PLOTNAME): # uses dedispF data,
         dedispFT[:,tavg] = subavg[:,0]
     print "dedispFT shape {}".format(np.shape(dedispFT))
     plt.imshow(dedispFT,aspect='auto',interpolation='none',cmap='binary')
+    plt.xlabel('Time [samples]')
+    plt.ylabel('Frequency [channels]')
+    plt.title('De-dispersed dynamic spectrum, freq. and time scrunched')
     plt.savefig(PLOTNAME)
+    plt.close()
     #plt.show()
 
 def plot_DDT(SAMPUSE,AVGFACT,NCHAN,DATA,FTOP,FCHAN,SAMPTIME,PLOTNAME): # datagrab_noDD
@@ -161,7 +189,11 @@ def plot_DDT(SAMPUSE,AVGFACT,NCHAN,DATA,FTOP,FCHAN,SAMPTIME,PLOTNAME): # datagra
     print "dedispy shape {}".format(np.shape(dedispy))
     print "dedispT shape {}".format(np.shape(dedispT))
     plt.imshow(dedispT,aspect='auto',interpolation='none',cmap='binary')
+    plt.xlabel('Time [samples]')
+    plt.ylabel('Frequency [channels]')
+    plt.title('De-dispersed dynamic spectrum, time scrunched')
     plt.savefig(PLOTNAME)
+    plt.close()
     #plt.show()
 
 if __name__=="__main__":
