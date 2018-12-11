@@ -25,13 +25,13 @@ def grab_data(FILE,STARTSAMP,NUMSAMP,NCHAN,DTYPE):
         thehead = header(F)
         headlen = len(thehead)
         F.seek(headlen + NCHAN * STARTSAMP)
-        data = np.fromfile(F,dtype=DTYPE,count=NCHAN*NUMSAMP) # make dtype option as well?
+        data = np.fromfile(F,dtype=DTYPE,count=int(NCHAN*NUMSAMP)) # make dtype option as well?
         data = np.reshape(data, (-1,NCHAN)).T 
     return data
 
 def siftcands(CANDFILE):
     cand = np.genfromtxt(CANDFILE)
-    filtcand = cand[(cand[:,0] >= 10.0) & (cand[:,5] >= 25.0) & (cand[:,10] <= 65536)]
+    filtcand = cand[(cand[:,0] >= 10.0) & (cand[:,5] >= 25.0) & (cand[:,10] <= 65536) & (cand[:,3] < 10)]
     # some other sifting stuff in the future hopefully
     return filtcand
 
@@ -254,12 +254,15 @@ if __name__=="__main__":
             continue
         DM = cand[5]
         timeint = int(cand[2])
+        timeint = round(cand[2],2) # the other one could possibly overwrite others
         ddelay = dispdelay(DM,fbot,ftop)
         ddelay_samp = int(np.round(ddelay / samptime))
-        candwidth = 2 ** cand[3]
+        candwidth = 2 ** cand[3] # in samples, width = 2**N * samptime ms
         padding = int(np.round(20 / samptime)) 
         startsamp = int(cand[1] - padding)
-        W_samp = int(np.round(candwidth / samptime))
+	print "starting samp {}".format(startsamp)
+        #W_samp = int(np.round(candwidth / samptime))
+        W_samp = int(candwidth)
         sampuse = 2*padding + W_samp
         sampuse_noDD = 2*padding + W_samp + ddelay_samp
         to_grab = 2*padding + W_samp + ddelay_samp
@@ -267,11 +270,12 @@ if __name__=="__main__":
         beamNO = int(cand[-1])
         print "beam number {}".format(beamNO)
         for fil in fils:
-            findme = 'beam_{}'.format(beamNO)
+            findme = 'beam_{}_'.format(beamNO)
             name = os.path.basename(fil)
             if name.find(findme) > 0:
                 thefil = fil
                 break
+	print "filterbank {}".format(thefil)
         datagrab = grab_data(thefil,startsamp,to_grab,nchan,opts.dtype)
         #datagrab = grab_data(fil,startsamp,to_grab_noDD,nchan)
         plotn = "beam{}_time{}_DM{}_tsDD.png".format(beamNO,timeint,int(DM))
