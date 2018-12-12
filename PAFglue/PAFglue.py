@@ -27,7 +27,8 @@ def get_headparam(head, parlist):
         'tsamp': ('d',8),
         'foff': ('d',8),
         'fch1': ('d',8),
-        'tstart': ('d',8)
+        'tstart': ('d',8),
+        'ibeam': ('i',4)
     }
     n = 0
     for i in parlist:
@@ -48,7 +49,8 @@ def update_headparam(head, parlist, vallist):
         'tsamp': ('d',8),
         'foff': ('d',8),
         'fch1': ('d',8),
-        'tstart': ('d',8)
+        'tstart': ('d',8),
+        'ibeam': ('i',4)
         }
     n = 0
     for i in parlist:
@@ -88,6 +90,9 @@ def create_new_file(fil,outfile,BLA,starty):
     with open(fil,'r') as f:
         head = header(f)
     if BLA:
+        oldbeam = get_headparam(head, ['ibeam'])[0]
+        newbeam = oldbeam + 1
+        head = update_headparam(head, ['ibeam'], [newbeam])
         head = update_headparam(head, ['tstart'], [starty])
     with open(outfile,'w') as f:
         f.write(head)
