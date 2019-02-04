@@ -161,7 +161,7 @@ if __name__=="__main__":
     #print "blocksize {}".format(opts.bs)
     for FIL in files:
         tmp = os.path.splitext(os.path.basename(FIL))
-        outfile = os.path.join(outdir,tmp[0] + "ds{}".format(opts.ds) + tmp[1])
+        outfile = os.path.join(outdir,tmp[0] + "_ds{}".format(opts.ds) + tmp[1])
         read_n_ds(FIL,opts.ds,outfile,opts.bs)
         #print "current fil {}".format(FIL)
         #print "outfile {}".format(outfile)
