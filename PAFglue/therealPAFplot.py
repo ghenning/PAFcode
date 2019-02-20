@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import optparse
 import glob
@@ -31,7 +33,7 @@ def grab_data(FILE,STARTSAMP,NUMSAMP,NCHAN,DTYPE):
 
 def siftcands(CANDFILE):
     cand = np.genfromtxt(CANDFILE)
-    filtcand = cand[(cand[:,0] >= 10.0) & (cand[:,5] >= 25.0) & (cand[:,10] <= 65536) & (cand[:,3] < 10)]
+    filtcand = cand[(cand[:,0] >= 10.0) & (cand[:,5] >= 25.0) & (cand[:,10] <= 65536) & (cand[:,3] < 10) & (cand[:,9] < 4)]
     # some other sifting stuff in the future hopefully
     return filtcand
 
