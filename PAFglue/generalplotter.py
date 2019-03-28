@@ -265,7 +265,7 @@ if __name__=="__main__":
     to_grab = 2*padding + opts.w + ddelay_samp
     sampuse_noDD = 2*padding + opts.w + ddelay_samp
     to_grab_noDD = 2*padding + opts.w + 2*ddelay_samp
-    timeint = round(opts.samp*opts.samptime,2) # only used for name of plot
+    timeint = round(opts.samp/opts.samptime,2) # only used for name of plot
     base = os.path.splitext(os.path.basename(opts.data))[0]
     ext = os.path.splitext(os.path.basename(opts.data))[-1]
     print "ext {}".format(ext)
