@@ -235,7 +235,11 @@ if __name__=="__main__":
         vi) de-dispersed dynamic spectrum, freq scrunched \n 
         vii) de-dispersed dynamic spectrum, time scrunched (downsampled) \n
         viii) de-dispersed dynamic spectrum, freq and time scrunched \n
-        You can clone the code from https://github.com/ghenning/PAFcode.git and play with it as you like."""
+        You can clone the code from https://github.com/ghenning/PAFcode.git and play with it as you like.
+        NEW: added manual zapping and zapping from rfifind mask: \n
+        --zap <startchan:endchan-startchan:endchan> i.e. zap as many ranges as you want but separate ranges
+        with a dash (-) and start/stop of range with a colon (:), NO SPACES! \n
+        --mask <path to rfifind mask> reads the zapped channels from the mask and applies it to plots"""
     parser = optparse.OptionParser(description=desc)
     parser.add_option('--ftop',dest='ftop',type='float',
         help="Top part of band in MHz (Default=1492.203704 [PAF])", default=1492.203704)
