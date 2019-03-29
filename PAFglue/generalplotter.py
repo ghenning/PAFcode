@@ -38,6 +38,14 @@ def grab_data(FILE,STARTSAMP,NUMSAMP,NCHAN,DTYPE,FIL):
         data = np.reshape(data,(-1,NCHAN)).T
     return data
 
+def read_mask(MASK):
+    with open(MASK,'r') as x:
+        np.fromfile(x,dtype=np.float64,count=6)
+        np.fromfile(x,dtype=np.int32,count=3)
+        nzap = np.fromfile(x,dtype=np.int32,count=1)[0]
+        mask_zap_chans = np.fromfile(x,dtype=np.int32,count=nzap)
+    return mask_zap_chans
+
 def plot_dedisp_ts(NCHAN,FTOP,FCHAN,DM,SAMPTIME,SAMPUSE,DATA,PLOTNAME):
     # Dedispersed time series
     ts_DD = np.zeros((1,SAMPUSE))
@@ -255,7 +263,26 @@ if __name__=="__main__":
         help="Width of candidate in samples (Default=10)",default=10)
     parser.add_option('--beamno',dest='beamno',type='int',
         help="beam number (only used for name of plot) (Default=1)",default=1)
+    parser.add_option('--mask',dest='mask',type='str',
+        help="rfifind mask to apply",default='')
+    parser.add_option('--zap',dest='zap',type='str',
+        help="zap specific channels (<x:y-x:y-x:y>) (no spaces!)",default='')
     (opts,args) = parser.parse_args()
+    if opts.mask:
+        print "Using mask {}".format(os.path.basename(opts.mask))
+        MASK_ME = True
+    if not opts.mask:
+        print "no mask applied"
+        MASK_ME = False
+    if opts.zap:
+        print "manual zapping"
+        #print opts.zap
+        zapsplit = opts.zap.split('-')
+        print "zap these bastards {}".format(zapsplit)
+        ZAP_ME = True
+    if not opts.zap:
+        print "no manual zapping"
+        ZAP_ME = False
     fbot = opts.ftop - opts.nchan * opts.fchan
     ddelay = dispdelay(opts.DM,fbot,opts.ftop)
     ddelay_samp = int(np.round(ddelay/opts.samptime))
@@ -282,6 +309,17 @@ if __name__=="__main__":
         except OSError as error:
             print error
     dat = grab_data(opts.data, startsamp, to_grab, opts.nchan,opts.dtype,isfil)
+    if MASK_ME:
+        maskzaps = read_mask(opts.mask)
+        dat[maskzaps,:] = 0
+    if ZAP_ME:
+        for i in range(len(zapsplit)):
+            print "zapping {}".format(zapsplit[i].strip())
+            zapchunk = zapsplit[i].strip()
+            zapstart = int(zapchunk.split(':')[0])
+            zapend = int(zapchunk.split(':')[1])
+            zaprange = np.arange(zapstart,zapend)
+            dat[zaprange,:] = 0
     print "data shape {}".format(np.shape(dat))
     plotn = "{}_time{}_DM{}_beam{}_tsDD.png".format(base,timeint,int(opts.DM),opts.beamno)
     plotname = os.path.join(opts.out,plotn)
@@ -296,6 +334,16 @@ if __name__=="__main__":
     print plotname 
     plot_tscrunch(opts.tscrunch,sampuse_noDD,opts.nchan,dat,plotname)
     dat = grab_data(opts.data,startsamp,to_grab_noDD,opts.nchan,opts.dtype,isfil)
+    if MASK_ME:
+        dat[maskzaps,:] = 0
+    if ZAP_ME:
+        for i in range(len(zapsplit)):
+            print "zapping {}".format(zapsplit[i].strip())
+            zapchunk = zapsplit[i].strip()
+            zapstart = int(zapchunk.split(':')[0])
+            zapend = int(zapchunk.split(':')[1])
+            zaprange = np.arange(zapstart,zapend)
+            dat[zaprange,:] = 0
     print "data shape {}".format(np.shape(dat))
     plotn = "{}_time{}_DM{}_beam{}_dynspecF.png".format(base,timeint,int(opts.DM),opts.beamno)
     plotname = os.path.join(opts.out,plotn)
