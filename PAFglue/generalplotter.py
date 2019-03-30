@@ -66,6 +66,15 @@ def plot_dedisp_ts(NCHAN,FTOP,FCHAN,DM,SAMPTIME,SAMPUSE,DATA,PLOTNAME):
     plt.close()
     #plt.show()
 
+def plot_bandpass(DATA,PLOTNAME):
+    # summed data for each channel
+    plt.plot(np.sum(DATA,axis=1))
+    plt.xlabel('Channel')
+    plt.ylabel('Amplitude')
+    plt.title('Bandpass')
+    plt.savefig(PLOTNAME)
+    plt.close()
+
 def plot_dynspec_raw(DATA,PLOTNAME):
     # raw dynamic spectra
     plt.imshow(DATA,aspect='auto',interpolation='none',cmap='binary')
@@ -325,6 +334,10 @@ if __name__=="__main__":
             zaprange = np.arange(zapstart,zapend)
             dat[zaprange,:] = 0
     print "data shape {}".format(np.shape(dat))
+    plotn = "{}_time{}_DM{}_beam{}_bp.png".format(base,timeint,int(opts.DM),opts.beamno)
+    plotname = os.path.join(opts.out,plotn)
+    print plotname 
+    plot_bandass(dat,plotname)
     plotn = "{}_time{}_DM{}_beam{}_tsDD.png".format(base,timeint,int(opts.DM),opts.beamno)
     plotname = os.path.join(opts.out,plotn)
     print plotname 
