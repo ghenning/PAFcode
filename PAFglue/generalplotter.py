@@ -337,7 +337,7 @@ if __name__=="__main__":
     plotn = "{}_time{}_DM{}_beam{}_bp.png".format(base,timeint,int(opts.DM),opts.beamno)
     plotname = os.path.join(opts.out,plotn)
     print plotname 
-    plot_bandass(dat,plotname)
+    plot_bandpass(dat,plotname)
     plotn = "{}_time{}_DM{}_beam{}_tsDD.png".format(base,timeint,int(opts.DM),opts.beamno)
     plotname = os.path.join(opts.out,plotn)
     print plotname 
