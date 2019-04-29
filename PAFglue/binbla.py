@@ -13,38 +13,41 @@ def check_mask(x,y,BEAM,CANDMASK):
     good_mask = np.binary_repr(np.sum(2**good_beams),width=22)
     bad_mask = np.binary_repr(np.sum(2**bad_beams),width=22)
     cmask = np.binary_repr(CANDMASK,width=22)
-    print "beam {}".format(BEAM)
-    print dist
-    print "cmask {}".format(cmask)
-    print "gmask {}".format(good_mask)
-    print "bmask {}".format(bad_mask)
+    #print "beam {}".format(BEAM)
+    #print dist
+    #print "cmask {}".format(cmask)
+    #print "gmask {}".format(good_mask)
+    #print "bmask {}".format(bad_mask)
     bm = int(bad_mask,2)
     cm = int(cmask,2)
     andy = bin(bm & cm) 
-    print "candmask and bad mask {}".format(andy)
+    #print "candmask and bad mask {}".format(andy)
     if andy == bin(0):
-        print "and is zero, this is a good boy"
+        return True
+        #print "and is zero, this is a good boy"
     else:
-        print "candmask ands with badmask, booo"
+        return False
+        #print "candmask ands with badmask, booo"
         #print "cmask {}".format(cmask)
         #print "gmask {}".format(good_mask)
         #print "bmask {}".format(bad_mask)
         #print "candmask and bad mask {}".format(andy)
-    print "--------------------"
+    #print "--------------------"
 
-cands = np.loadtxt('2018-08-29-05:02:29_all.cand')
-numcands = len(cands[:,0])
-#tstcand = cands[2512,:]
-#beam = int(tstcand[-1]) - 1
-#candmask = int(tstcand[10])
-#check_mask(x,y,beam,candmask)
+if __name__=="__main__":
+    cands = np.loadtxt('2018-08-29-05:02:29_all.cand')
+    numcands = len(cands[:,0])
+    #tstcand = cands[2512,:]
+    #beam = int(tstcand[-1]) - 1
+    #candmask = int(tstcand[10])
+    #check_mask(x,y,beam,candmask)
 
-for i in range(numcands):
-    print "cand no {}".format(i)
-    tstcand = cands[i,:]
-    beam = int(tstcand[-1]) - 1
-    candmask = int(tstcand[10])
-    check_mask(x,y,beam,candmask)
+    for i in range(numcands):
+        print "cand no {}".format(i)
+        tstcand = cands[i,:]
+        beam = int(tstcand[-1]) - 1
+        candmask = int(tstcand[10])
+        check_mask(x,y,beam,candmask)
 '''
 for xy in zip(x[0:22],y[0:22]):
     origx = x[beam]; origy = y[beam]
