@@ -89,7 +89,7 @@ if __name__=="__main__":
             SAMP = str(int(cand[1]))
             W = str(int(2**cand[3]))
             BEAM = str(B)
-            subprocess.check_call(["python","generalplotter.py","--ftop","1459","--fchan","0.44907","--nchan","512","--samptime","216e-06","--data",thefil,"--out",plotpath,"--dm",DM,"--samp",SAMP,"-w",W,"--beamno",BEAM])
+            subprocess.check_call(["python","generalplotter.py","--ftop","1459","--fchan","0.44907","--nchan","512","--samptime","216e-03","--data",thefil,"--out",plotpath,"--dm",DM,"--samp",SAMP,"-w",W,"--beamno",BEAM,"--tscrunch","4"])
     #print "bla {}".format(totplotted)
     statout = os.path.join(os.path.dirname(opts.candfile),'stats.txt')
     with open(statout,'w') as f:
