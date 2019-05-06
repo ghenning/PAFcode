@@ -26,7 +26,7 @@ def grab_data(FILE,STARTSAMP,NUMSAMP,NCHAN,DTYPE,FIL):
     with open(FILE,'r') as F:
         if not FIL:
             headlen = 4096
-            print "hi there, I'm assuming the DADA header is 4096 bytes"
+            print "hi there, I'm assuming the DADA header is 4096 bits"
         else:
             print "hi there, I'm reading a filterbank header now"
             thehead = header(F)

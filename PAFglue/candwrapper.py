@@ -68,6 +68,7 @@ if __name__=="__main__":
     totplotted = 0
     fils = glob.glob(os.path.join(opts.datadir,"*.fil"))
     gcands = os.path.join(os.path.dirname(opts.candfile),'zcands.txt')
+    # create good cand file
     with open(gcands,'w') as f:
         f.write("#S/N\tsampidx\ttoff\t\tfiltidx\tDMidx\tDM\tassoc\tearly\tlate\tnbeams\tmask\tmaxbeam\tmaxSN\tbeam\n") 
     for cand in candidates:
