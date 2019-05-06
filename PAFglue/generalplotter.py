@@ -77,6 +77,7 @@ def plot_bandpass(DATA,PLOTNAME):
 
 def plot_dynspec_raw(DATA,PLOTNAME):
     # raw dynamic spectra
+    print "data shape {}".format(np.shape(DATA))
     plt.imshow(DATA,aspect='auto',interpolation='none',cmap='binary')
     plt.xlabel('Time [samples]')
     plt.ylabel('Frequency [channels]')
