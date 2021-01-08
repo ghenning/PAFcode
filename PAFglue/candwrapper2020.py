@@ -78,7 +78,7 @@ if __name__=="__main__":
     Source = glob.glob(os.path.join(bigdir,opts.source+"*")) # find results dirs for the source
     for d in Source: # iterate through results directories
         D = find_cands(d)[0] # candidate file
-        outdir = os.path.join(os.path.dirname(D,"CANDS"))
+        outdir = os.path.join(os.path.dirname(D),"CANDS")
         if not os.path.exists(outdir):
             try:
                 subprocess.check_call(["mkdir",outdir])
