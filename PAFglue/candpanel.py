@@ -304,7 +304,7 @@ if __name__=="__main__":
     dt = args.dtype
     dm = args.dm
     dm_ran = args.dm_range
-    dms = np.arange(int(dm)-dm_ran/2,int(dm)+dm_ran/2+1) # dm range 
+    dms = np.arange(np.max([int(dm)-dm_ran/2,0]),int(dm)+dm_ran/2+1) # dm range 
     subbands = args.subbands
     downsamp = args.downsamp
     beamno = args.beamno
