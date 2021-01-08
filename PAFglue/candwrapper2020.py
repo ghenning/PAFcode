@@ -88,7 +88,7 @@ if __name__=="__main__":
         t = thename.split('_')[-1]
         tt = "{}-{}-{}T{}:{}:{}".format(t[0:4],t[4:6],t[6:8],t[9:11],t[11:13],t[13:15])
         s = thename.split('_')[0]
-        tmpdir = os.path.join(otherbigdir,t+"*"+s) # filterbank dir
+        tmpdir = os.path.join(otherbigdir,tt+"*"+s) # filterbank dir
         fildir = glob.glob(tmpdir)[0]
         fils = find_phil(fildir)
         numcands = origlen(D)
