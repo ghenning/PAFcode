@@ -7,12 +7,16 @@ x = beams[:,0]; y = beams[:,1]
 
 def check_mask(x,y,BEAM,CANDMASK):
     origx = x[BEAM]; origy = y[BEAM]
-    dist = np.sqrt((origx-x[0:22])**2 + (origy-y[0:22])**2)
+    #dist = np.sqrt((origx-x[0:22])**2 + (origy-y[0:22])**2)
+    dist = np.sqrt((origx-x[0:32])**2 + (origy-y[0:32])**2)
     good_beams = np.asarray(np.where(dist < .13)).flatten()
     bad_beams = np.asarray(np.where(dist > .13)).flatten()
-    good_mask = np.binary_repr(np.sum(2**good_beams),width=22)
-    bad_mask = np.binary_repr(np.sum(2**bad_beams),width=22)
-    cmask = np.binary_repr(CANDMASK,width=22)
+    #good_mask = np.binary_repr(np.sum(2**good_beams),width=22)
+    #bad_mask = np.binary_repr(np.sum(2**bad_beams),width=22)
+    #cmask = np.binary_repr(CANDMASK,width=22)
+    good_mask = np.binary_repr(np.sum(2**good_beams),width=32)
+    bad_mask = np.binary_repr(np.sum(2**bad_beams),width=32)
+    cmask = np.binary_repr(CANDMASK,width=32)
     #print "beam {}".format(BEAM)
     #print dist
     #print "cmask {}".format(cmask)
