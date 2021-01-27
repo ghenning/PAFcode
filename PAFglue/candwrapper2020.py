@@ -91,6 +91,11 @@ if __name__=="__main__":
         tmpdir = os.path.join(otherbigdir,tt+"*"+s) # filterbank dir
         fildir = glob.glob(tmpdir)[0]
         fils = find_phil(fildir)
+        # add zaps, different for summer vs winter
+        if t[4:6]=="12": # apply winter zaps
+            zaps = "165:340-345:355-380:390-400:410-435:455"
+        else:
+            zaps = "300:320-350:420-450:460-490:500" # apply summer zaps
         numcands = origlen(D)
         sncands = siftSN(D)
         dmcands = siftDM(D)
@@ -117,6 +122,7 @@ if __name__=="__main__":
                     name = os.path.basename(fil)
                     if name.find(findme) > 0:
                         thefil = fil
+			print thefil
                         break
                 with open(gcands,'a') as f:
                     f.write("{:.2f}\t{:d}\t{:.5f}\t{:d}\t{:d}\t{:.2f}\t{:d}\t{:d}\t{:d}\t{:d}\t{:d}\t{:d}\t{:.2f}\t{:d}".format(cand[0],int(cand[1]),cand[2],int(cand[3]),int(cand[4]),cand[5],int(cand[6]),int(cand[7]),int(cand[8]),int(cand[9]),int(cand[10]),int(cand[11]),cand[12],int(cand[13])))
@@ -129,12 +135,14 @@ if __name__=="__main__":
                     subprocess.check_call(["python","candpanel.py",
                         "--PAF",
                         "--data",thefil,
-                        "--downsamp",str(4), # feels like a good downsamp factor for the PAF
+                        "--downsamp",str(8), # feels like a good downsamp factor for the PAF
+			            "--subbands",str(64), # use this while looking for standard zaps
                         "--out",outdir,
                         "--dm",DM,
                         "--samp",SAMP,
-                        "--beamno",BEAM])
-                except subprocess>CalledProcessError as err:
+                        "--beamno",BEAM,
+                        "--zap",zaps])
+                except subprocess.CalledProcessError as err:
                     print err
         statout = os.path.join(outdir,'stats.txt')
         with open(statout,'w') as f:

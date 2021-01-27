@@ -83,7 +83,8 @@ def TS_plot(TS):
     ax[0,0].set_ylabel('Intensity')
     ax[0,0].set_xlabel('Sample')
     ax[0,0].set_title('Dedispersed time series')
-    ax[0,0].set_xlim(0,np.shape(TS)[0])
+    #ax[0,0].set_xlim(0,np.shape(TS)[0])
+    ax[0,0].set_xlim(int(.3*np.shape(TS)[0]),int(.7*np.shape(TS)[0]))
 
 def DS_plot(OUTBANDS,AVGFAC,DM,NCHAN,DATA,FTOP,FCHAN,TSAMP,SAMPUSE,COL):
     perband = int(NCHAN/OUTBANDS)
@@ -206,8 +207,8 @@ if __name__=="__main__":
     optional.add_argument('--print_defaults',action='store_true',
             help="Print default settings for receivers",default=False)
     optional.add_argument('--window',type=float,
-            help="Width of time series plot in s, default is 0.5 seconds",
-            default=0.5)
+            help="Width of time series plot in s, default is 0.25 seconds",
+            default=0.25)
     optional.add_argument('--dm_range',type=int,
             help="DM range around candidate DM for DM-t plot, default is 100",
             default=100)
